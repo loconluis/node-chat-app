@@ -4,7 +4,7 @@ const express = require('express')
 const app = express()
 
 // PORT variable
-const port = process.env.PORT
+const port = process.env.PORT || 3000
 // static folder
 const publicPath = path.join(__dirname, '../public')
 app.use(express.static(publicPath))
