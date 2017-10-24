@@ -10,6 +10,6 @@ const publicPath = path.join(__dirname, '../public')
 app.use(express.static(publicPath))
 
 // Running server
-app.listen(3000, () => {
-  console.log(`App is served in port 3000`)
+app.listen(port, () => {
+  console.log(`App is served in port ${port}`)
 })
