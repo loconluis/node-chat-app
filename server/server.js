@@ -25,15 +25,10 @@ io.on('connection', (socket) => {
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined'))
 
   // Listen for createMessage event
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('createMessage on', message)
     io.emit('newMessage', generateMessage(message.from, message.text))
-
-    // socket.broadcast.emit('newMessage', {
-    //   from: message.from,
-    //   text: message.text,
-    //   createdAt: new Date().getTime()
-    // })
+    callback('This is sent from sever.')
   })
 
   // Listen a disconnect event when client close the page
