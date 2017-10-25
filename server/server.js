@@ -8,7 +8,7 @@ let server = require('http').Server(app)
 const io = require('socket.io')(server)
 
 // import of generator of message
-const { generateMessage } = require('./utils/message')
+const { generateMessage, generateLocationMessage } = require('./utils/message')
 
 // PORT variable
 const port = process.env.PORT || 3000
@@ -29,6 +29,10 @@ io.on('connection', (socket) => {
     console.log('createMessage on', message)
     io.emit('newMessage', generateMessage(message.from, message.text))
     callback('This is sent from sever.')
+  })
+
+  socket.on('create-location', (coords) => {
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
   })
 
   // Listen a disconnect event when client close the page
