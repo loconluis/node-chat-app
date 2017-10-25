@@ -17,6 +17,16 @@ app.use(express.static(publicPath))
 io.on('connection', (socket) => {
   console.log('New user connected')
 
+  socket.emit('user-join', {
+    from: 'admin',
+    text: 'Welcome to the chat app'
+  })
+
+  socket.broadcast.emit('user-join', {
+    from: 'admin',
+    text: 'New User Join'
+  })
+
   // Listen for createMessage event
   socket.on('createMessage', (message) => {
     console.log('createMessage on', message)
@@ -25,6 +35,12 @@ io.on('connection', (socket) => {
       text: message.text,
       createdAt: new Date().getTime()
     })
+
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime()
+    // })
   })
 
   // Listen a disconnect event when client close the page
