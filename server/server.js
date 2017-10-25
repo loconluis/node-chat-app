@@ -17,15 +17,16 @@ app.use(express.static(publicPath))
 io.on('connection', (socket) => {
   console.log('New user connected')
 
-  socket.emit('newMessage', {
-    from: 'test1@example.com',
-    text: 'Testing emit event with socket.io'
-  })
-
-  // emitting an event new-email
+  // Listen for createMessage event
   socket.on('createMessage', (message) => {
     console.log('createMessage on', message)
+    io.emit('newMessage', {
+      from: message.from,
+      text: message.text,
+      createdAt: new Date().getTime()
+    })
   })
+
   // Listen a disconnect event when client close the page
   socket.on('disconnect', () => {
     console.log('User disconnected from server')
