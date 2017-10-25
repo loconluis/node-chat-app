@@ -1,7 +1,11 @@
 const path = require('path')
 const express = require('express')
-
 const app = express()
+
+let server = require('http').Server(app)
+
+// instance of socket.io
+const io = require('socket.io')(server)
 
 // PORT variable
 const port = process.env.PORT || 3000
@@ -9,7 +13,16 @@ const port = process.env.PORT || 3000
 const publicPath = path.join(__dirname, '../public')
 app.use(express.static(publicPath))
 
+// socket work. Connection emit the event when find a new connection
+io.on('connection', (socket) => {
+  console.log('New user connected')
+  // Emitting a disconnect listener when client close the page
+  socket.on('disconnect', () => {
+    console.log('User disconnected from server')
+  })
+})
+
 // Running server
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`App is served in port ${port}`)
 })

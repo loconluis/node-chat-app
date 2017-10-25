@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/loconluis/node-chat-app#readme",
   "dependencies": {
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "socket.io": "^2.0.4"
   },
   "devDependencies": {
     "standard": "^10.0.3"
