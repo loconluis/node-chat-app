@@ -7,10 +7,12 @@ let server = require('http').Server(app)
 // instance of socket.io
 const io = require('socket.io')(server)
 
+const { Users } = require('./utils/users')
 // import of generator of message
 const { generateMessage, generateLocationMessage } = require('./utils/message')
 const { isRealString } = require('./utils/validation')
 
+let users = new Users()
 // PORT variable
 const port = process.env.PORT || 3000
 // static folder
@@ -23,16 +25,17 @@ io.on('connection', (socket) => {
   // Listen for Join event
   socket.on('join', (params, callback) => {
     if (!isRealString(params.name) || !isRealString(params.room)) {
-      callback('Name and room name are required')
+      return callback('Name and room name are required')
     }
     // Join for rooms
     socket.join(params.room)
-    // socket.leave('name of room')
-    // io.emit --> io.to(name of room).emit
-    // socket.broadcast.emit --> socket.to('name of room').emit
+    users.removeUser(socket.id) // clean an array of the posibble twice id
+    users.addUser(socket.id, params.name, params.room) // adding a new user
+
+    io.to(params.room).emit('update-userList', users.getUserList(params.room))
 
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app'))
-    socket.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} user joined`))
+    socket.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} joined`))
 
     callback()
   })
@@ -50,7 +53,12 @@ io.on('connection', (socket) => {
 
   // Listen a disconnect event when client close the page
   socket.on('disconnect', () => {
-    console.log('User disconnected from server')
+    let user = users.removeUser(socket.id)
+
+    if (user) {
+      io.to(user.room).emit('update-userList', users.getUserList(user.room))
+      io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left`))
+    }
   })
 })
 
