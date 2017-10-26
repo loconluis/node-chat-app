@@ -42,13 +42,21 @@ io.on('connection', (socket) => {
 
   // Listen for createMessage event
   socket.on('createMessage', (message, callback) => {
-    console.log('createMessage on', message)
-    io.emit('newMessage', generateMessage(message.from, message.text))
+    let user = users.getUser(socket.id)
+
+    if (user && isRealString(message.text)) {
+      io.to(user.room).emit('newMessage', generateMessage(user.name, message.text))
+    }
+
     callback('')
   })
 
   socket.on('create-location', (coords) => {
-    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
+    let user = users.getUser(socket.id)
+
+    if (user) {
+      io.to(user.room).emit('newLocationMessage', generateLocationMessage(user.name, coords.latitude, coords.longitude))
+    }
   })
 
   // Listen a disconnect event when client close the page
